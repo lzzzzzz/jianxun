@@ -329,6 +329,10 @@ fc-cache
 > 聊天消息先检查是否加入房间，若加入房间则消息发给房间，否则发给个人
 > 页面退出执行websocket断开连接操作，并清空登录状态
 
+###参考鸣谢
+> https://github.com/niezhiliang/springbootwebsocket
+> https://github.com/qqxx6661/springboot-websocket-demo
+
 
 
 
