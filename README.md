@@ -12,6 +12,7 @@ Openmore团队是目前北京的一家创业公司内里的几个主程自发组
 
 ## 介绍
 **springboot-template** 是基于SSM的J2EE项目快速开发脚手架，集成了最常用的框架,适用于`Restfull` 架构风格`Web Service`接口开发。
+**聊天系统采用springboot+websocket+redis，权限采用shiro和socket双重登录认证
 
 ## 主要框架
 * **SpringBoot2.0.0release**
