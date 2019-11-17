@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+    <context id="Mysql" targetRuntime="MyBatis3Simple" defaultModelType="flat">
+        <property name="javaFileEncoding" value="UTF-8"/>
+
+
+        <plugin type="tk.mybatis.mapper.generator.MapperPlugin">
+            <property name="mappers" value="tk.mybatis.mapper.common.Mapper"/>
+            <!-- caseSensitive默认false，当数据库表名区分大小写时，可以将该属性设置为true -->
+            <property name="caseSensitive" value="true"/>
+        </plugin>
+
+
+        <commentGenerator>
+            <property name="suppressAllComments" value="true"/>
+        </commentGenerator>
+
+        <jdbcConnection driverClass="${driverClass}"
+                        connectionURL="${connectionURL}"
+                        userId="${userId}"
+                        password="${password}">
+        </jdbcConnection>
+
+
+        <!--  <javaModelGenerator targetPackage="${modelPackage}"
+                              targetProject="${src_main_java}">
+          &lt;!&ndash;    <property name="enableSubPackages" value="false" />
+              <property name="trimStrings" value="true" />&ndash;&gt;
+          </javaModelGenerator>
+          <sqlMapGenerator targetPackage="${sqlMapperPackage}"
+                           targetProject="${src_main_resources}">
+              <property name="enableSubPackages" value="false" />
+
+          </sqlMapGenerator>
+          <javaClientGenerator type="XMLMAPPER"
+                               targetPackage="${mapperPackage}" targetProject="${src_main_java}">
+              <property name="enableSubPackages" value="false" />
+          </javaClientGenerator>
+          <table tableName="%" >
+              <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+          </table>-->
+
+        <javaModelGenerator targetPackage="${modelPackage}" targetProject="${src_main_java}"/>
+
+        <sqlMapGenerator targetPackage="${sqlMapperPackage}" targetProject="${src_main_resources}"/>
+
+        <javaClientGenerator targetPackage="${mapperPackage}" targetProject="${src_main_java}" type="XMLMAPPER"/>
+
+
+        <!--<table tableName="app_version">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+        </table>
+        <table tableName="feedback">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+        </table>-->
+        <!--<table tableName="promotion">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+        </table>-->
+        <!--<table tableName="notice">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+        </table>-->
+        <!--<table tableName="hot_search">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+        </table>-->
+        <!--<table tableName="topic" domainObjectName="Topic">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+        </table>-->
+        <!--<table tableName="video"
+               enableCountByExample="true"
+               enableUpdateByExample="true"
+               enableDeleteByExample="true"
+               enableSelectByExample="true"
+               selectByExampleQueryId="true">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+        </table>-->
+        <!--<table tableName="foreign_resource">
+            <generatedKey column="resource_id" sqlStatement="Mysql" identity="true"/>
+        </table>-->
+        <!--<table tableName="video_category">
+            <generatedKey column="resource_id" sqlStatement="Mysql" identity="true"/>
+        </table>-->
+        <!--<table tableName="video_comments">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+        </table>-->
+        <!--<table tableName="user_favorite">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+        </table>-->
+        <!--<table tableName="watch_record">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+        </table>-->
+        <!--<table tableName="common_order">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+        </table>-->
+        <!--<table tableName="redpacket">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+        </table>
+        <table tableName="redpacket_item">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+        </table>
+        <table tableName="user_coin">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+        </table>
+        <table tableName="user_coin_record">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+        </table>
+        <table tableName="app_store">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+        </table>-->
+        <table tableName="device_user">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+        </table>
+    </context>
+</generatorConfiguration>

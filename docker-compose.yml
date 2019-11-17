@@ -1,0 +1,18 @@
+myredis:
+  image: redis:latest
+  ports:
+    - "6779:6379"
+  volumes:
+    - ./docker/conf/redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
+  command: redis-server /usr/local/etc/redis/redis.conf
+
+mycentos7_qpf:
+  build: ./docker/openjdk_cn
+  ports:
+    - "9090:9090"
+  volumes:
+    - ./build/libs/:/root/:rw
+    - ./logs/:/var/www/:rw
+  links:
+    - myredis:redis_qpf
+  command: "java -jar /root/qupingfang.jar --debug"

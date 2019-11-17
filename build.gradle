@@ -1,0 +1,371 @@
+buildscript {
+	ext {
+		springBootVersion = '2.0.0.RELEASE'
+	}
+	repositories {
+		maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
+		maven { url 'http://maven.aliyun.com/nexus/content/repositories/central/' }
+		maven { url "https://repo.spring.io/snapshot" }
+		maven { url "https://repo.spring.io/milestone" }
+		jcenter()
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+		classpath("org.flywaydb:flyway-gradle-plugin:4.1.2")
+		classpath 'org.springframework:springloaded:1.2.7.RELEASE'
+	}
+}
+//allprojects {
+//	repositories {
+//		maven { url 'https://jitpack.io' }
+//	}
+//}
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+// UnitTest
+apply plugin: "jacoco"
+
+
+apply plugin: 'org.flywaydb.flyway'
+//apply plugin: 'war'
+
+group = 'org.openmore'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+
+configurations {
+	mybatisGenerator
+//	providedRuntime
+}
+
+repositories {
+	mavenLocal()
+	maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
+	maven { url 'http://maven.aliyun.com/nexus/content/repositories/central/' }
+	jcenter()
+	mavenCentral()
+}
+
+//allprojects {
+//	repositories {
+//		maven { url 'https://jitpack.io' }
+//	}
+//}
+
+dependencies {
+	compile("org.springframework.boot:spring-boot-autoconfigure:${springBootVersion}")
+	compile("org.springframework.boot:spring-boot-starter-parent:${springBootVersion}")
+	compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
+	compile("org.springframework.boot:spring-boot-starter-aop:${springBootVersion}")
+	compile("org.springframework.boot:spring-boot-starter-mail:${springBootVersion}")
+	compile("org.springframework.boot:spring-boot-starter-freemarker:${springBootVersion}")
+//	compile("org.springframework.boot:spring-boot-starter-thymeleaf:${springBootVersion}")
+	compile("org.springframework.boot:spring-boot-devtools:${springBootVersion}")
+
+	testCompile("org.springframework.boot:spring-boot-test:${springBootVersion}")
+	testCompile("com.h2database:h2:1.4.197")
+	testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
+}
+
+help {
+	println 'usage:'
+	println '  1.配置mysql数据库，修改environment/dev/application.properties文件'
+	println ''
+	println '  2.初始化环境：dev开发环境，prod生产环境，beta外网测试'
+	println '    ./gradlew initEnv -Penv=dev'
+	println ''
+	println '  3.初始化数据库,将migration目录下sql迁移到本地数据库'
+	println '    ./gradlew flywayMigrate'
+	println ''
+	println '  4. MybatisGenerator根据DB表结构，生成Mapper文件和对应的entity'
+	println '    ./gradlew mybatisGenerate'
+	println ''
+	println '  5. 查看单元测试覆盖率'
+	println '    ./gradlew jacocoTestReport'
+	println '  # {PROJECT_ROOT}/build/report/jacoco/test/index.html'
+	println ''
+}
+
+ext {
+	if (!project.hasProperty("env")) {
+		println '没有配置数据环境，默认使用开发环境'
+		env = "dev"
+	}
+}
+
+def copyProperties = {
+	println('start initial environment')
+	def fromPath = 'environment/' + project["env"]
+	def propertiesDest = 'src/main/resources/'
+	println "拷贝：" + fromPath + '/*文件到' + propertiesDest
+	copy {
+		from fromPath
+		into propertiesDest
+		include '**/*.*'
+	}
+}
+
+def getAppProperties = {
+	def properties = new Properties()
+	def dbPropertiesPath = sourceSets.main.resources.srcDirs[0].path
+	if(!file("$dbPropertiesPath/application.properties").exists()){
+		println('## 警告：src/main/resources/application.properties没有找到，使用默认#开发环境#配置')
+		copyProperties()
+	}
+	file("$dbPropertiesPath/application.properties").withInputStream { inputStream ->
+		properties.load(inputStream)
+	}
+	properties
+}
+
+//war{
+//	archiveName="${baseName}-${project.version}.${extension}"
+//}
+
+jar {
+	baseName = 'SmartCommunity'
+	version = '0.0.1-SNAPSHOT'
+}
+
+// 配置资源目录
+sourceSets {
+	main {
+		resources {
+			srcDir("src/main/resources")
+		}
+	}
+}
+
+
+test {
+	include '**/*Test.class'
+}
+
+flyway {
+	def prop = getAppProperties()
+	user = prop.getProperty('spring.datasource.username')
+	url = prop.getProperty('spring.datasource.url')
+	password = prop.getProperty('spring.datasource.password')
+	locations = ["filesystem:db/migration"]
+}
+
+
+//统一编码为utf-8
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+//依赖
+dependencies {
+
+	//maven仓库中心没有的jar，则放入libs目录下
+	compile fileTree(dir: 'libs', include: ['*.jar'])
+
+	// 日志
+	compile 'ch.qos.logback:logback-classic:1.2.2'
+	compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+
+	// url地址重写
+	compile group: 'org.tuckey', name: 'urlrewritefilter', version: '4.0.4'
+
+	// 数据库
+	compile 'mysql:mysql-connector-java:8.0.11'
+	// JDBC连接池
+//	compile 'c3p0:c3p0:0.9.1.2'
+	// JDBC
+	compile 'com.alibaba:druid:1.1.9'
+
+//	汉语转拼音
+
+	compile group: 'com.belerweb', name: 'pinyin4j', version: '2.5.1'
+//  google 二维码
+	compile group: 'com.google.zxing', name: 'core', version: '3.3.3'
+	compile group: 'com.google.zxing', name: 'javase', version: '3.3.3'
+
+	// DAO: MyBatis
+//	compile 'org.mybatis:mybatis:3.4.6'
+//	compile 'org.mybatis:mybatis-spring:1.3.1'
+	compile 'org.mybatis.spring.boot:mybatis-spring-boot-starter:1.3.2'
+	compile 'tk.mybatis:mapper-spring-boot-starter:2.0.0'
+//	compile 'tk.mybatis:mapper:4.0.0'
+
+	//fastJson
+	compile 'com.alibaba:fastjson:1.2.47'
+
+	// Spring DAO层
+	compile 'org.springframework:spring-jdbc:4.3.10.RELEASE'
+//	compile 'org.springframework:spring-tx:4.3.10.RELEASE'
+
+	// redis客户端:Jedis
+	compile 'redis.clients:jedis:2.9.0'
+	compile 'org.springframework.data:spring-data-redis:2.0.0.RELEASE'
+	compile 'org.springframework.boot:spring-boot-starter-data-redis:2.0.0.RELEASE'
+
+	//	HttpSession
+	compile 'org.springframework.session:spring-session-data-redis:2.0.0.RELEASE'
+//	compile 'org.springframework.session:spring-session:1.3.3.RELEASE'
+
+	compile 'com.dyuproject.protostuff:protostuff-core:1.0.8'
+	compile 'com.dyuproject.protostuff:protostuff-runtime:1.0.8'
+
+	compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.6'
+
+	// Map工具类
+	compile 'commons-collections:commons-collections:3.2'
+
+	// JWT
+	compile 'io.jsonwebtoken:jjwt:0.7.0'
+//	自定义工具包
+//	compile 'org.openmore:springboot-utils:1.0-SNAPSHOT'
+
+	// Wechat-Group
+	compile 'com.github.binarywang:weixin-java-common:3.4.0'
+	compile 'com.github.binarywang:weixin-java-mp:3.3.0'
+	compile 'com.github.binarywang:weixin-java-open:3.3.0'
+	// Jodd 工具包
+//    compile 'org.jodd:jodd-core:3.5.2'
+	compile 'com.github.binarywang:weixin-java-miniapp:3.3.0'
+
+	compile 'com.github.binarywang:weixin-java-pay:3.0.0'
+	//compile 'com.github.binarywang:weixin-java-common:3.1.0'
+	//compile 'com.townmc:mp:3.20'
+
+	compile 'com.alipay.sdk:alipay-sdk-java:3.7.26.ALL'
+
+	//websocket
+	compile 'org.springframework.boot:spring-boot-starter-websocket'
+    //MQ
+    compile 'org.springframework.boot:spring-boot-starter-amqp'
+    compile 'org.springframework.boot:spring-boot-starter-reactor-netty'
+	//qq登录
+	//compile 'com.qq:Sdk4J:2'
+//	aspect
+	compile 'org.aspectj:aspectjweaver:1.8.13'
+
+	compile 'com.github.pagehelper:pagehelper:5.1.2'
+	// 鉴权
+	compile 'org.apache.shiro:shiro-spring:1.4.0'
+	compile 'org.apache.shiro:shiro-web:1.4.0'
+	compile 'org.crazycake:shiro-redis:2.4.2.1-RELEASE'
+
+    // 定时调度器
+    compile "org.quartz-scheduler:quartz:2.3.0"
+    //quartz-redis-jobStore redis持久化
+    compile "net.joelinn:quartz-redis-jobstore:1.1.13"
+
+//    compile 'org.apache.tomcat:tomcat-jdbc:8.5.12'
+	// 邮件
+//	compile 'javax.mail:mail:1.4.7'
+
+	// 文件上传
+	compile 'commons-fileupload:commons-fileupload:1.3.2'
+
+	//阿里云OSS
+	compile "com.aliyun.oss:aliyun-sdk-oss:2.3.0"
+	//阿里云短信
+	compile "com.aliyun:aliyun-java-sdk-core:4.0.3"
+
+	// 云片
+//	compile 'com.yunpian.sdk:yunpian-java-sdk:1.2.7'
+	// 7牛
+//	compile 'com.qiniu:qiniu-java-sdk:7.2.11'
+
+	//POI处理
+	compile 'org.apache.poi:poi:3.16'
+	compile 'org.apache.poi:poi-ooxml:3.16'
+
+
+	//swagger
+	compile "io.springfox:springfox-swagger2:2.6.1"
+	compile 'io.springfox:springfox-swagger-ui:2.6.1'
+	compile 'io.springfox:springfox-staticdocs:2.6.1'
+	compile 'io.github.robwin:assertj-swagger:0.5.0'
+
+
+	//freeMarker
+	//compile group: 'org.freemarker', name: 'freemarker', version:'2.3.23'
+	//Gson解析
+	compile 'com.google.code.gson:gson:2.6.2'
+
+	//已下这些依赖有重复
+	compile 'commons-codec:commons-codec:1.9'
+	compile 'com.googlecode.libphonenumber:libphonenumber:6.2'
+	compile 'com.google.code.findbugs:jsr305:3.0.0'
+	compile 'org.apache.httpcomponents:httpcore:4.4.3'
+	compile 'org.apache.commons:commons-lang3:3.9'
+	compile 'org.apache.httpcomponents:httpclient:4.5.1'
+
+	//lombok支持
+	//annotationProcessor('org.projectlombok:1.18.2\'')
+	//compileOnly('org.projectlombok:1.18.2')
+	//testAnnotationProcessor('org.projectlombok:1.18.2')
+	//testCompileOnly('org.projectlombok:1.18.2')
+
+	//代码生成器
+//	compile 'com.github.lzzzzzz:code-generator:v1.05'
+
+	// 添加单元测试库
+//	testCompile 'junit:junit:4.12'
+//	testCompile 'org.springframework.restdocs:spring-restdocs-mockmvc:2.0.0.RELEASE'
+	testCompile "org.springframework.restdocs:spring-restdocs-restassured:2.0.0.RELEASE"
+	testCompile 'com.fasterxml.jackson.module:jackson-module-jsonSchema:2.8.7'
+	testCompile 'com.jayway.restassured:rest-assured:2.9.0'
+//	testCompile 'org.springframework:spring-test:4.3.10.RELEASE'
+	testCompile 'org.hamcrest:hamcrest-core:1.3'
+	testCompile 'org.mockito:mockito-core:1.10.19'
+	testCompile 'com.jayway.restassured:json-schema-validator:2.9.0'
+	testCompile 'com.jayway.restassured:spring-mock-mvc:2.9.0'
+
+	mybatisGenerator 'org.mybatis.generator:mybatis-generator-core:1.3.5'
+	mybatisGenerator 'mysql:mysql-connector-java:8.0.11'
+	mybatisGenerator 'tk.mybatis:mapper:4.0.0'
+
+}
+
+
+// 初始化环境
+task initEnv {
+	doLast{
+		copyProperties()
+	}
+}
+
+task mybatisGenerate  {
+	doLast {
+		def prop = getAppProperties()
+
+		ant.properties['targetProject'] = projectDir.path
+		ant.properties['driverClass'] = prop.getProperty('spring.datasource.driver-class-name')
+		ant.properties['connectionURL'] = prop.getProperty('spring.datasource.url')
+		ant.properties['userId'] = prop.getProperty('spring.datasource.username')
+		ant.properties['password'] = prop.getProperty('spring.datasource.password')
+		ant.properties['src_main_java'] = sourceSets.main.java.srcDirs[0].path
+		ant.properties['src_main_resources'] = sourceSets.main.resources.srcDirs[0].path
+		ant.properties['modelPackage'] = prop.getProperty('modelPackage')
+		ant.properties['mapperPackage'] = prop.getProperty('mapperPackage')
+		ant.properties['sqlMapperPackage'] = prop.getProperty('sqlMapperPackage')
+
+		ant.taskdef(
+				name: 'mbgenerator',
+				classname: 'org.mybatis.generator.ant.GeneratorAntTask',
+				classpath: configurations.mybatisGenerator.asPath
+		)
+		ant.mbgenerator(overwrite: false,
+				configfile: 'db/generatorConfig.xml', verbose: true) {
+			propertyset {
+				propertyref(name: 'targetProject')
+				propertyref(name: 'userId')
+				propertyref(name: 'driverClass')
+				propertyref(name: 'connectionURL')
+				propertyref(name: 'password')
+				propertyref(name: 'src_main_java')
+				propertyref(name: 'src_main_resources')
+				propertyref(name: 'modelPackage')
+				propertyref(name: 'mapperPackage')
+				propertyref(name: 'sqlMapperPackage')
+			}
+		}
+	}
+}

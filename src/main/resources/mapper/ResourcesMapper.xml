@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.openmore.cms.dao.ResourcesMapper">
+  <!--<resultMap id="BaseResultMap" type="org.openmore.cms.entity.Resources">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="oss_key" jdbcType="VARCHAR" property="key" />
+    <result column="resource_type" jdbcType="VARCHAR" property="type" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="size" jdbcType="VARCHAR" property="size" />
+    <result column="duration" jdbcType="VARCHAR" property="duration" />
+    <result column="url" jdbcType="VARCHAR" property="url" />
+    <result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
+    <result column="updated_time" jdbcType="TIMESTAMP" property="updatedTime" />
+    <result column="deleted" jdbcType="BIT" property="deleted" />
+    <result column="version" jdbcType="INTEGER" property="version" />
+    <result column="operator" jdbcType="VARCHAR" property="operator" />
+  </resultMap>-->
+</mapper>

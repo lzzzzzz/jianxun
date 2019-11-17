@@ -1,0 +1,20 @@
+version: "3"
+services:
+  centos7_1:
+    build: ./docker/openjdk_cn
+    network_mode: bridge
+    ports:
+      - "8081:9191"
+    volumes:
+      - ./:/root/:rw
+      - ./logs_1/:/var/www/:rw
+    command: "java -jar /root/qupingfang.jar --debug"
+  centos7_2:
+    build: ./docker/openjdk_cn
+    network_mode: bridge
+    ports:
+      - "8082:9191"
+    volumes:
+      - ./:/root/:rw
+      - ./logs_2/:/var/www/:rw
+    command: "java -jar /root/qupingfang.jar --debug"

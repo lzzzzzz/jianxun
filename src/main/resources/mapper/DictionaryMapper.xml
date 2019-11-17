@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.openmore.cms.dao.DictionaryMapper">
+  <resultMap id="BaseResultMap" type="org.openmore.cms.entity.Dictionary">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="dic_key" jdbcType="VARCHAR" property="dicKey" />
+    <result column="parent_key" jdbcType="VARCHAR" property="parentKey" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="en_name" jdbcType="VARCHAR" property="enName" />
+    <result column="data" jdbcType="VARCHAR" property="data" />
+    <result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
+    <result column="updated_time" jdbcType="TIMESTAMP" property="updatedTime" />
+    <result column="deleted" jdbcType="BIT" property="deleted" />
+    <result column="version" jdbcType="INTEGER" property="version" />
+    <result column="operator" jdbcType="VARCHAR" property="operator" />
+    <result column="sort_order" jdbcType="INTEGER" property="sortOrder" />
+  </resultMap>
+
+  <select id="selectDicsByCommaString" resultType="org.openmore.cms.dto.api.DictionaryDto">
+    select d.*
+    from dictionary d
+    WHERE
+    d.deleted = false
+    <if test="commaString != null and commaString != &quot;&quot;">
+      and FIND_IN_SET(d.dic_key, #{commaString})
+    </if>
+  </select>
+
+  <select id="selectSecondMenu" resultType="org.openmore.cms.dto.api.DictionaryDto">
+    select d.*
+    from dictionary d, dictionary d2
+    WHERE
+    d.deleted = false and d2.deleted = false
+    and d.parent_key = d2.dic_key
+    and d2.parent_key = 'MENU_TYPE'
+    <if test="name != null and name != &quot;&quot;">
+      and d.name like concat('%', #{d.name}, '%')
+    </if>
+  </select>
+</mapper>

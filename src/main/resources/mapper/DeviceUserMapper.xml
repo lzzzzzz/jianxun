@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.openmore.cms.dao.DeviceUserMapper">
+  <resultMap id="BaseResultMap" type="org.openmore.cms.entity.DeviceUser">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <id column="is_vip" jdbcType="BIT" property="isVip" />
+    <result column="device_token" jdbcType="VARCHAR" property="deviceToken" />
+    <result column="vip_expired_time" jdbcType="TIMESTAMP" property="vipExpiredTime" />
+  </resultMap>
+</mapper>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.openmore.cms.dao.UserMapper">
+    <select id="selectByUserName" parameterType="java.lang.String" resultType="org.openmore.cms.entity.User">
+    select * from `user` where username = #{username, jdbcType = VARCHAR}
+  </select>
+
+
+    <select id="selectUsers" resultType="org.openmore.cms.entity.User">
+        SELECT u.*
+        from `user` u
+        WHERE u.deleted = false
+        <if test="id != null and id != &quot;&quot;">
+            and u.id = #{id}
+        </if>
+        <if test="type != null">
+            and u.user_type = #{type}
+        </if>
+        <if test="null != isVip">
+            <if test="isVip == true">
+                and (u.is_vip = true and u.vip_expired_time is not null and u.vip_expired_time &gt; CURRENT_TIMESTAMP)
+            </if>
+            <if test="isVip != true">
+                and (u.is_vip = false or u.vip_expired_time is null or CURRENT_TIMESTAMP &gt; u.vip_expired_time)
+            </if>
+        </if>
+        <if test="username != null and username != &quot;&quot;">
+            and u.nickname like concat(concat('%',#{username}),'%')
+        </if>
+        <if test="phone != null and phone != &quot;&quot;">
+            and u.phone like concat(concat('%',#{phone}),'%')
+        </if>
+        <if test="platformName != null and platformName != &quot;&quot;">
+            and u.regist_from =#{platformName}
+        </if>
+        <if test="startTime != null">
+            and u.created_time &gt; #{startTime}
+        </if>
+        <if test="endTime != null">
+            and #{endTime} &gt; u.created_time
+        </if>
+        ORDER By u.updated_time desc
+    </select>
+
+    <select id="selectUserCount" resultType="java.lang.Long">
+        SELECT count(*)
+        from `user` u
+        WHERE u.deleted = false
+        <if test="id != null and id != &quot;&quot;">
+            and u.id = #{id}
+        </if>
+        <if test="type != null and type != &quot;&quot;">
+            and u.user_type = #{type}
+        </if>
+        <if test="null != isVip">
+            <if test="isVip == true">
+                and (u.is_vip = true and u.vip_expired_time is not null and u.vip_expired_time &gt; CURRENT_TIMESTAMP)
+            </if>
+            <if test="isVip != true">
+                and (u.is_vip = false or u.vip_expired_time is null or CURRENT_TIMESTAMP &gt; u.vip_expired_time)
+            </if>
+        </if>
+        <if test="username != null and username != &quot;&quot;">
+            and u.nickname like concat(concat('%',#{username}),'%')
+        </if>
+        <if test="phone != null and phone != &quot;&quot;">
+            and u.phone like concat(concat('%',#{phone}),'%')
+        </if>
+        <if test="platformName != null and platformName != &quot;&quot;">
+            and u.regist_from =#{platformName}
+        </if>
+        <if test="startTime != null">
+            and u.created_time &gt; #{startTime}
+        </if>
+        <if test="endTime != null">
+            and #{endTime} &gt; u.created_time
+        </if>
+    </select>
+
+    <select id="selectHasPermissionUser" resultType="org.openmore.cms.dto.api.UserDto">
+        select s.* from `user` s,
+        permission p, role_permission rp
+        where s.role_id = rp.role_id
+        and rp.permission_id = p.id
+        AND p.code = #{code}
+        ORDER By s.updated_time desc
+    </select>
+</mapper>
