@@ -43,7 +43,8 @@ public class AccountController {
     @Autowired
     private ChatService chatService;
 
-    @ApiOperation(value = "分页返回所有数据", response = AppVersionDto.class, responseContainer = "List")
+    /**shiro系统登录注册*/
+    @ApiOperation(value = "shiro系统登录注册", response = AppVersionDto.class, responseContainer = "List")
     @ApiResponses(value = { @ApiResponse(code = 400, message = "请求失败：找不到id={id}的", response = AppVersionDto.class) })
     @RequestMapping(method = RequestMethod.POST, value = "/login", consumes = {APPLICATION_JSON_UTF8_VALUE})
     public BaseResponse register(@RequestBody @ApiParam(value = "登录信息")OpenmoreToken loginParams) {
@@ -81,6 +82,7 @@ public class AccountController {
         }
     }
 
+    /**查询当前加入的房间*/
     @TokenAuthCheck
     @ApiOperation(value = "查询当前加入的房间", response = String.class, responseContainer = "String")
     @ApiResponses(value = { @ApiResponse(code = 400, message = "请求失败：找不到id={id}的", response = AppVersionDto.class) })
@@ -110,6 +112,7 @@ public class AccountController {
             return BaseResponse.buildFailResponse(400, "查询当前所在房间出错");
         }
     }
+    /**加入聊天房间*/
     @Transactional
     @TokenAuthCheck
     @ApiOperation(value = "加入房间", response = String.class, responseContainer = "String")

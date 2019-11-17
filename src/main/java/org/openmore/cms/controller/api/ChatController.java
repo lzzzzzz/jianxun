@@ -61,6 +61,7 @@ public class ChatController {
     private ChatService chatService;
 
 
+    /**连接websocket服务器*/
     @TokenAuthCheck
     @MessageMapping("/chat.connect")
     public BaseResponse addUser(SimpMessageHeaderAccessor headerAccessor) {
@@ -91,6 +92,7 @@ public class ChatController {
         }
     }
 
+    /**websocket加入房间-弃用*/
     @MessageMapping("/chat.join")
     public BaseResponse join(@Payload String number, SimpMessageHeaderAccessor headerAccessor) {
         try {
@@ -101,17 +103,6 @@ public class ChatController {
             if(StringUtils.isEmpty(senderNumber) || redisTemplate.opsForSet().isMember(onlineUsers, senderNumber)){
                 return BaseResponse.buildFailResponse(4002, "未连接服务器");
             }
-            User user = ThreadLocalConfig.getUser();
-            ChatMessage chatMessage = new ChatMessage();
-            chatMessage.setType(MessageType.JOIN);
-            chatMessage.setType(MessageType.JOIN);
-            chatMessage.setDatatype(MessageDataType.TEXT);
-            chatMessage.setContent(user.getNickName()+" 加入房间");
-            List<UserDto> userList = userService.selectAll(null, null, null,null,
-                    null, number, null, null, null, null);
-            //发送通知消息有人加入房间
-            //chatService.sendMessage(number, chatMessage);
-            //chatService.sendMessageUserDtos(userList, chatMessage);
             return BaseResponse.buildSuccessResponse("加入成功");
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
@@ -120,6 +111,7 @@ public class ChatController {
         }
     }
 
+    /**发送消息*/
     //@TokenAuthCheck
     @MessageMapping("/chat.sendMessage")
     public BaseResponse sendMessage(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor) {
